@@ -1,9 +1,13 @@
 let addItem = document.getElementById("add-a-item")
 let submitItem = document.getElementById("submitBtn")
 let showList = document.getElementById("showList")
-let replaceSubmit = document.getElementById("replaceSubmit")
+let replaceSubmit = document.getElementById("replaceSubmitBtn")
 let loaderBtn = document.getElementById("loaderBtn")
 
+//span loader for inside button
+let spanLoader = document.createElement("span")
+spanLoader.classList.add("spinner-border" ,"spinner-border-sm")
+spanLoader.setAttribute("aria-hidden","true")
 
 submitItem.addEventListener("click", () => {
     handleSubmit()
@@ -11,7 +15,6 @@ submitItem.addEventListener("click", () => {
 
 //Loader
 function loader() {
-    console.log("loader..")
     showList.innerHTML = ""
     let flexDiv = document.createElement("div")
     let div = document.createElement("div")
@@ -21,31 +24,32 @@ function loader() {
     showList.appendChild(flexDiv)
     flexDiv.appendChild(div)
 }
+loader()
 
 function handleSubmit() {
     if (addItem.value.trim() !== "") {
         //submit btn loader
-        loaderBtn.style.display = "block"
-        submitBtn.style.display = "none"
-
-        console.log("clicked....")
+        submitBtn.innerHTML = ""
+        submitBtn.appendChild(spanLoader)
+        submitBtn.setAttribute("disabled","")
         db.collection("todo").add({
             name: addItem.value.trim(),
             timestamp: new Date().toISOString()
         })
             .then((res) => {
                 addItem.value = "";
-                loaderBtn.style.display = "none"
-                submitBtn.style.display = "block"
+                //Hide loader
+                submitBtn.innerHTML = "Submit"
+                submitBtn.removeAttribute("disabled")                
                 getData()
             })
             .catch((err) => console.log(err))
     } else {
         addItem.classList.add("border-danger")
     }
-
 }
 
+//validation handler
 addItem.addEventListener("input", () => {
     if (addItem.value.trim() === "") {
         addItem.classList.add("border-danger")
@@ -54,7 +58,6 @@ addItem.addEventListener("input", () => {
     }
 })
 
-loader()
 function getData() {
     db.collection("todo")
         .orderBy("timestamp", "desc")
@@ -62,9 +65,6 @@ function getData() {
         .then((querySnapshot) => {
             //hide lodaer
             showList.innerHTML = ""
-            // loaderBtn.style.display = "none"
-            submitBtn.style.display = "block"
-
             querySnapshot.forEach((doc) => {
                 //render DOM
                 let divRow = document.createElement("div")
@@ -74,7 +74,6 @@ function getData() {
                 let text = document.createElement("div")
                 let buttonEdit = document.createElement("button")
                 let buttonDelete = document.createElement("button")
-
                 divRow.classList.add("row", "mt-2")
                 divColDelete.classList.add("col-md-2")
                 divColEdit.classList.add("col-md-2")
@@ -82,11 +81,9 @@ function getData() {
                 text.classList.add("bg-light", "p-2")
                 buttonEdit.classList.add("btn", "btn-success", "w-100")
                 buttonDelete.classList.add("btn", "btn-danger", "w-100")
-
                 text.innerHTML = doc.data().name
                 buttonEdit.innerHTML = "Edit"
                 buttonDelete.innerHTML = "Delete"
-
                 divColDelete.appendChild(buttonDelete)
                 divColEdit.appendChild(buttonEdit)
                 divColText.appendChild(text)
@@ -96,26 +93,27 @@ function getData() {
                 showList.appendChild(divRow)
 
                 buttonDelete.onclick = () => {
-                    deleteItem(divRow, doc.id)
+                    deleteItem(buttonDelete,doc.id)
                 }
 
                 buttonEdit.onclick = () => {
-                    updateItem(divRow, doc.id, text)
+                    updateItem(doc.id, text)
                 }
             });
         });
 }
 getData()
 
-function deleteItem(row, docId) {
-    console.log(row, docId)
+function deleteItem(btnDelete, docId) {
+    //button loader
+    btnDelete.innerHTML = ""
+    btnDelete.appendChild(spanLoader)
+    btnDelete.setAttribute("disabled","")
+
     db.collection("todo")
         .doc(docId)
         .delete()
         .then(() => {
-            console.log("delete item...")
-            
-            //update the DOM
             getData()
         })
         .catch((err) => {
@@ -124,41 +122,45 @@ function deleteItem(row, docId) {
         })
 }
 
-function updateItem(row, docId, text) {
-    console.log(text.innerHTML)
+function updateItem(docId, text) {
     addItem.value = text.innerHTML
     //add save & cancel btn instead of submit btn
+    replaceSubmit.innerHTML = ""
     submitBtn.style.display = "none"
     let save = document.createElement("button")
     let cancel = document.createElement("button")
-    let div = document.createElement("div")
-
     save.innerHTML = "save";
     cancel.innerHTML = "x";
     save.classList.add("btn", "btn-success")
     cancel.classList.add("btn", "btn-danger", "ms-1")
+    replaceSubmit.appendChild(save)
+    replaceSubmit.appendChild(cancel)
 
-    div.appendChild(save)
-    div.appendChild(cancel)
-    replaceSubmit.appendChild(div)
     //add return submit button if cancel
     cancel.onclick = () => {
-        div.style.display = "none"
         submitBtn.style.display = "block"
+        replaceSubmit.innerHTML = ""
         addItem.value = ""
     }
+
     //save button
     save.onclick = () => {
         if (addItem.value.trim() !== "") {
-            loader()
+            save.innerHTML = ""
+            save.appendChild(spanLoader)
+            save.setAttribute("disabled","")
+            
             db.collection("todo")
                 .doc(docId)
                 .update({
                     name: addItem.value.trim()
                 })
                 .then(() => {
-                    replaceSubmitBtn()
-                    console.log("updated....")
+                    save.removeAttribute("disabled")
+                    save.innerHTML = "Save"
+                    replaceSubmit.innerHTML = ""
+                    submitBtn.style.display = "block"
+                    addItem.value = ""
                     getData()
                 })
                 .catch((err) => {
@@ -166,18 +168,5 @@ function updateItem(row, docId, text) {
                     showList.innerHTML = err
                 })
         }
-    }
-}
-
-function replaceSubmitBtn() {
-    replaceSubmit.innerHTML = ""
-    addItem.value = ""
-    let submitBtn = document.createElement("button")
-    submitBtn.innerHTML = "Submit"
-    submitBtn.classList.add("btn", "btn-primary", "w-100")
-    submitBtn.id = "submitBtn";
-    replaceSubmit.appendChild(submitBtn)
-    submitBtn.onclick = () => {
-        handleSubmit()
     }
 }
