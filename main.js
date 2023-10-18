@@ -72,18 +72,18 @@ function getData() {
                 let divColEdit = document.createElement("div")
                 let divColDelete = document.createElement("div")
                 let text = document.createElement("div")
-                let buttonEdit = document.createElement("button")
-                let buttonDelete = document.createElement("button")
-                divRow.classList.add("row", "mt-2")
+                let buttonEdit = document.createElement("li")
+                let buttonDelete = document.createElement("li")
+                divRow.classList.add("row", "mt-2","mx-0","border","border-light")
                 divColDelete.classList.add("col-md-2")
                 divColEdit.classList.add("col-md-2")
                 divColText.classList.add("col-md-8")
-                text.classList.add("bg-light", "p-2")
-                buttonEdit.classList.add("btn", "btn-success", "w-100")
-                buttonDelete.classList.add("btn", "btn-danger", "w-100")
+                text.classList.add("p-2")
+                buttonEdit.classList.add("fa", "fa-pencil");
+                // buttonDelete.classList.add("fa", "fa fa-trash");
                 text.innerHTML = doc.data().name
-                buttonEdit.innerHTML = "Edit"
-                buttonDelete.innerHTML = "Delete"
+                // buttonEdit.innerHTML = "Edit"
+                // buttonDelete.innerHTML = "Delete"
                 divColDelete.appendChild(buttonDelete)
                 divColEdit.appendChild(buttonEdit)
                 divColText.appendChild(text)
