@@ -38,10 +38,36 @@ input {
 .cust-container {
   margin-top: -55px;
   background: var(--primary);
-
   padding: 50px 40px;
   width: 65%;
 }
+
+.pointer {
+  cursor: pointer;
+}
+
+li.fa.fa-trash,
+.fa-pencil {
+  transition: 0.3s ease-in-out;
+}
+
+li.fa.fa-trash:hover {
+  color: #ff4c4c;
+}
+
+.fa-pencil:hover {
+  color: #03cd03;
+}
+
+.replacebtn {
+  height: 60px;
+  display: inline-flex;
+  align-items: center;
+  width: 50%;
+  justify-content: center;
+  cursor: pointer;
+}
+
 /* search button */
 .search {
   position: relative;

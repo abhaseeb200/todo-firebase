@@ -39,7 +39,7 @@ function handleSubmit() {
             .then((res) => {
                 addItem.value = "";
                 //Hide loader
-                submitBtn.innerHTML = "Submit"
+                submitBtn.innerHTML = "<i class='fa fa-plus'></i>"
                 submitBtn.removeAttribute("disabled")                
                 getData()
             })
@@ -74,13 +74,13 @@ function getData() {
                 let text = document.createElement("div")
                 let buttonEdit = document.createElement("li")
                 let buttonDelete = document.createElement("li")
-                divRow.classList.add("row", "mt-2","mx-0","border","border-light")
-                divColDelete.classList.add("col-md-2")
-                divColEdit.classList.add("col-md-2")
-                divColText.classList.add("col-md-8")
-                text.classList.add("p-2")
-                buttonEdit.classList.add("fa", "fa-pencil");
-                // buttonDelete.classList.add("fa", "fa fa-trash");
+                divRow.classList.add("row","py-2","mt-2","mx-0","border","border-light")
+                divColDelete.classList.add("col-sm-1","p-0","text-center","pe-2")
+                divColEdit.classList.add("col-sm-1","p-0","text-center")
+                divColText.classList.add("col-sm-10")
+                // text.classList.add("")
+                buttonEdit.classList.add("fa", "fa-pencil","pointer");
+                buttonDelete.classList.add("fa", "fa-trash","pointer");
                 text.innerHTML = doc.data().name
                 // buttonEdit.innerHTML = "Edit"
                 // buttonDelete.innerHTML = "Delete"
@@ -106,7 +106,7 @@ getData()
 
 function deleteItem(btnDelete, docId) {
     //button loader
-    btnDelete.innerHTML = ""
+    btnDelete.classList.remove("fa-trash","pointer")
     btnDelete.appendChild(spanLoader)
     btnDelete.setAttribute("disabled","")
 
@@ -127,12 +127,10 @@ function updateItem(docId, text) {
     //add save & cancel btn instead of submit btn
     replaceSubmit.innerHTML = ""
     submitBtn.style.display = "none"
-    let save = document.createElement("button")
-    let cancel = document.createElement("button")
-    save.innerHTML = "save";
-    cancel.innerHTML = "x";
-    save.classList.add("btn", "btn-success")
-    cancel.classList.add("btn", "btn-danger", "ms-1")
+    let save = document.createElement("li")
+    let cancel = document.createElement("li")
+    save.classList.add("fa", "fa-check","bg-success","replacebtn")
+    cancel.classList.add("fa", "fa-times", "bg-danger","replacebtn")
     replaceSubmit.appendChild(save)
     replaceSubmit.appendChild(cancel)
 
@@ -146,7 +144,7 @@ function updateItem(docId, text) {
     //save button
     save.onclick = () => {
         if (addItem.value.trim() !== "") {
-            save.innerHTML = ""
+            save.classList.remove("pointer","fa-check")
             save.appendChild(spanLoader)
             save.setAttribute("disabled","")
             
@@ -157,7 +155,7 @@ function updateItem(docId, text) {
                 })
                 .then(() => {
                     save.removeAttribute("disabled")
-                    save.innerHTML = "Save"
+                    save.innerHTML = "<li class='fa fa-check pointer'></li>"
                     replaceSubmit.innerHTML = ""
                     submitBtn.style.display = "block"
                     addItem.value = ""
